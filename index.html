@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Content Indexer</title>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+
+      function createGetListener(){
+        // Put a click handler on the search button
+        $(".btn").on('click', function(e){
+          // Clear existing status message
+          $('#content').html("Loading...");
+          // Grab the keyword(s) from the input field
+          var $url = $("#url").val();
+          // AJAX Request with search query- will go to Amazon API
+          $.ajax({
+            type: "GET",
+            cache: false,
+            // url: "http://localhost:3000/api/v1/websites",
+            url: "https://content-indexer.herokuapp.com/api/v1/websites",
+            success: (data) => {
+              $('#content').html("");
+              display(data);
+            },
+
+          });
+        })
+      }
+
+      function createPostListener(){
+        // Put a click handler on the search button
+        $(".submit").on('click', function(e){
+          console.log('clicked')
+          // Prevent page reload
+          e.preventDefault();
+          // Clear existing status message
+          $('#content').html("Loading...");
+          // Grab the keyword(s) from the input field
+          var $url = $("#url").val();
+          // AJAX Request with search query- will go to Amazon API
+          $.ajax({
+            type: "POST",
+            data: {url: $url},
+            cache: true,
+            // url: "http://localhost:3000/api/v1/websites",
+            url: "https://content-indexer.herokuapp.com/api/v1/websites",
+            success: (data) => {
+              $('#content').html("");
+              console.log(data)
+              display(data);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+              $('#content').html(xhr.status + " " + thrownError);
+            }
+          });
+        })
+      }
+
+    function display(data) {
+      if (data.length > 1){
+        data.forEach( (website, i) => {
+          $('#content').append(`<h3>${website.url}</h3><ul id=${i}></ul>`)
+          $(`#${i}`).append('<h4>Headers</h4>')
+          website.headers.map( (header) => {
+            $(`#${i}`).append(`<li>${header.size} - ${header.text}</li>`)
+          })
+          $(`#${i}`).append('<h4>Links</h4>')
+          website.links.map( (link) => {
+            $(`#${i}`).append(`<li>${link.text} - ${link.url}`)
+          })
+        })
+      } else if (data.length === 1) {
+        console.log(data)
+        $('#content').append(`<h3>${data.url}</h3><ul id=1></ul>`)
+        $(`#1`).append('<h4>Headers</h4>')
+        data.headers.map( (header) => {
+          $(`#1`).append(`<li>${header.size} - ${header.text}</li>`)
+        })
+        $(`#1`).append('<h4>Links</h4>')
+        data.links.map( (link) => {
+          $(`#1`).append(`<li>${link.text} - ${link.url}`)
+        })
+      } else {
+        $('#content').html('No data.')
+      }
+    }
+
+    window.onload = function() {
+      createGetListener();
+      createPostListener();
+    }
+
+  </script>
+  </head>
+  <body>
+    <h1>Content Indexer</h1>
+    <p><button class="btn">See all stored content</button></p>
+    <form class="form">
+      <input id="url" placeholder="Enter a URL" type="text">
+      <button type="submit" class="submit">Submit</span></button>
+    </form>
+    <div id="content"></div>
+  </body>
+</html>

@@ -23,7 +23,7 @@
             url: "https://content-indexer.herokuapp.com/api/v1/websites",
             success: (data) => {
               $('#content').html("");
-              display(data);
+              displayAll(data);
             },
 
           });
@@ -49,8 +49,7 @@
             url: "https://content-indexer.herokuapp.com/api/v1/websites",
             success: (data) => {
               $('#content').html("");
-              console.log(data)
-              display(data);
+              displayOne(data);
             },
             error: function (xhr, ajaxOptions, thrownError) {
               $('#content').html(xhr.status + " " + thrownError);
@@ -59,8 +58,8 @@
         })
       }
 
-    function display(data) {
-      if (data.length > 1){
+    function displayAll(data) {
+      if (data.length > 0){
         data.forEach( (website, i) => {
           $('#content').append(`<h3>${website.url}</h3><ul id=${i}></ul>`)
           $(`#${i}`).append('<h4>Headers</h4>')
@@ -72,8 +71,14 @@
             $(`#${i}`).append(`<li>${link.text} - ${link.url}`)
           })
         })
-      } else if (data.length === 1) {
-        console.log(data)
+      }
+      else {
+        $('#content').html('No data.')
+      }
+    }
+
+    function displayOne(data){
+      if (data) {
         $('#content').append(`<h3>${data.url}</h3><ul id=1></ul>`)
         $(`#1`).append('<h4>Headers</h4>')
         data.headers.map( (header) => {
@@ -83,7 +88,8 @@
         data.links.map( (link) => {
           $(`#1`).append(`<li>${link.text} - ${link.url}`)
         })
-      } else {
+      }
+      else {
         $('#content').html('No data.')
       }
     }

@@ -3,44 +3,33 @@
   <head>
     <meta charset="utf-8">
     <title>Content Indexer</title>
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
     <link rel="stylesheet" href="style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script>
 
       function createGetListener(){
-        // Put a click handler on the search button
         $(".btn").on('click', function(e){
-          // Clear existing status message
           $('#content').html("Loading...");
-          // Grab the keyword(s) from the input field
           var $url = $("#url").val();
-          // AJAX Request with search query- will go to Amazon API
           $.ajax({
             type: "GET",
             cache: false,
-            // url: "http://localhost:3000/api/v1/websites",
-            url: "https://content-indexer.herokuapp.com/api/v1/websites",
+            url: "http://localhost:3000/api/v1/websites",
+            // url: "https://content-indexer.herokuapp.com/api/v1/websites",
             success: (data) => {
               $('#content').html("");
               displayAll(data);
             },
 
           });
-        })
+        });
       }
 
       function createPostListener(){
-        // Put a click handler on the search button
         $(".submit").on('click', function(e){
-          console.log('clicked')
-          // Prevent page reload
           e.preventDefault();
-          // Clear existing status message
           $('#content').html("Loading...");
-          // Grab the keyword(s) from the input field
           var $url = $("#url").val();
-          // AJAX Request with search query- will go to Amazon API
           $.ajax({
             type: "POST",
             data: {url: $url},
@@ -55,43 +44,43 @@
               $('#content').html(xhr.status + " " + thrownError);
             }
           });
-        })
+        });
       }
 
     function displayAll(data) {
       if (data.length > 0){
         data.forEach( (website, i) => {
-          $('#content').append(`<h3>${website.url}</h3><ul id=${i}></ul>`)
-          $(`#${i}`).append('<h4>Headers</h4>')
+          $('#content').append(`<h3>${website.url}</h3><ul id=${i}></ul>`);
+          $(`#${i}`).append('<h4>Headers</h4>');
           website.headers.map( (header) => {
-            $(`#${i}`).append(`<li>${header.size} - ${header.text}</li>`)
-          })
-          $(`#${i}`).append('<h4>Links</h4>')
+            $(`#${i}`).append(`<li>${header.size} - ${header.text}</li>`);
+          });
+          $(`#${i}`).append('<h4>Links</h4>');
           website.links.map( (link) => {
-            $(`#${i}`).append(`<li>${link.text} - ${link.url}`)
-          })
-        })
+            $(`#${i}`).append(`<li>${link.text} - ${link.url}`);
+          });
+        });
       }
       else {
-        $('#content').html('No data.')
-      }
+        $('#content').html('No data.');
+      };
     }
 
     function displayOne(data){
       if (data) {
         $('#content').append(`<h3>${data.url}</h3><ul id=1></ul>`)
-        $(`#1`).append('<h4>Headers</h4>')
+        $(`#1`).append('<h4>Headers</h4>');
         data.headers.map( (header) => {
-          $(`#1`).append(`<li>${header.size} - ${header.text}</li>`)
-        })
-        $(`#1`).append('<h4>Links</h4>')
+          $(`#1`).append(`<li>${header.size} - ${header.text}</li>`);
+        });
+        $(`#1`).append('<h4>Links</h4>');
         data.links.map( (link) => {
           $(`#1`).append(`<li>${link.text} - ${link.url}`)
-        })
+        });
       }
       else {
         $('#content').html('No data.')
-      }
+      };
     }
 
     window.onload = function() {
